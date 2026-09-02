@@ -1,4 +1,4 @@
-package com.quarteto.Univox_site.model;
+package com.quarteto.univox_site.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
