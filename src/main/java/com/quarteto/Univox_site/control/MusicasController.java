@@ -6,23 +6,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.quarteto.univox_site.model.Albuns;
-import com.quarteto.univox_site.repository.AlbunsRepository;
+import com.quarteto.univox_site.model.Musicas;
+import com.quarteto.univox_site.repository.MusicasRepository;
 
 @RestController
-@RequestMapping("/albuns")
-public class AlbunsController {
-    final AlbunsRepository repository;
+@RequestMapping("/musicas")
+public class MusicasController {
+    final MusicasRepository repository;
 
-    public AlbunsController(AlbunsRepository repository) {
+    public MusicasController(MusicasRepository repository) {
         this.repository = repository;
     }
 
-     @GetMapping("/todos")
-    public List<Albuns> todos(){
+    @GetMapping("/todos")
+    public List<Musicas> todos(){
         return repository.findAll();
 
     }
-    
+
 
 }
