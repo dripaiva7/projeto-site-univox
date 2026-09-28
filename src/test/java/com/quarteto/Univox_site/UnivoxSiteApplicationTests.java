@@ -1,4 +1,4 @@
-package com.quarteto.Univox_site;
+package com.quarteto.univox_site;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
