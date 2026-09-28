@@ -1,25 +1,33 @@
 <header>
   <nav>
-    <div class="links-navegacao">
-      <a href="#home">HOME</a>
-      <a href="#sobre">SOBRE NÓS</a>
-      <a href="#agenda">AGENDA</a>
-      <a href="#galeria">GALERIA</a>
-      <a href="#midias">MÍDIAS</a>
-      <a href="#contatos">CONTATOS</a>
+
+    <div class="links-navegacao" [class.aberto]="abreMenu">
+      <a href="#home" (click) ="fecharMenu()">HOME</a>
+      <a href="#sobre" (click)="fecharMenu()">SOBRE NÓS</a>
+      <a href="#agenda" (click)="fecharMenu()">AGENDA</a>
+      <a href="#galeria" (click)="fecharMenu()">GALERIA</a>
+      <a href="#midias" (click)="fecharMenu()">MÍDIAS</a>
+      <a href="#contatos" (click)="fecharMenu()">CONTATOS</a>
     </div>
 
     <div class="icones-redes-sociais">
       <a href="https://www.instagram.com/univox_" target="_blank">
         <i class="icone-instagram fa-brands fa-instagram"></i>
       </a>
+
       <a href="https://www.youtube.com/@univoxfaama7371" target="_blank">
         <i class="icone-youtube fa-brands fa-youtube"></i>
       </a>
+
       <a href="https://open.spotify.com/intl-pt/artist/2WkRpwuAi081VE0bz3TjYB" target="_blank">
         <i class="icone-spotify fa-brands fa-spotify"></i>
       </a>
     </div>
+
+    <button class="menu-mobile" (click)="abrirMenu()">
+      ☰
+    </button>
+
   </nav>
 </header>
 
@@ -97,16 +105,16 @@
     <img src="/imagens/sobre-nos.jpeg" alt="Quarteto UNIVOX">
   </div>
 
-</section>
+  </section>
 
   <section id="agenda">
 
  
   <div class="agenda-galeria">
 
-    <button class="galeria-anterior">‹</button>
+    <button class="galeria-anterior" (click)="galeriaAnterior()">‹</button>
 
-    <div class="galeria-fotos">
+    <div class="galeria-fotos" #galeriaFotos>
       <img src="/imagens/IMG_6226.JPEG" alt="UNIVOX em apresentação">
       <img src="/imagens/IMG_6227.JPEG" alt="UNIVOX em apresentação">
       <img src="/imagens/IMG_6236.JPEG" alt="UNIVOX em apresentação">
@@ -115,7 +123,7 @@
       
     </div>
 
-    <button class="galeria-proxima">›</button>
+    <button class="galeria-proxima" (click)="galeriaProxima()">›</button>
 
   </div>
 
@@ -128,58 +136,57 @@
 
       <h3>PRÓXIMOS EVENTOS</h3>
     </div>
-
+<p>.</p>
     <div class="agenda-ano">
       <p>2026</p>
     </div>
 
-    <div class="evento">
-      <strong>24-25 SET</strong>
-      <span>CONGRESSO DE MULHERES</span>
-      <small>CONCEIÇÃO DO ARAGUAIA - PA</small>
-      <button>+ DETALHES</button>
-    </div>
+     @for (evento of eventos; track evento.id) {
 
     <div class="evento">
-      <strong>10 OUT</strong>
-      <span>ESPAÇO UMARIZAL - MANHÃ</span>
-      <small>BELÉM - PA</small>
-      <button>+ DETALHES</button>
+
+      <strong>{{ formatarData(evento.data) }}</strong>
+
+      <span>{{ evento.titulo }}</span>
+
+      <small>
+        {{ evento.cidade ? evento.cidade + ' - ' + evento.estado : evento.local }}
+      </small>
+
+      <button
+        [disabled]="!evento.descricao"
+        (click)="abrirDetalhes(evento)">+ DETALHES
+      </button>
+
     </div>
 
-    <div class="evento">
-      <strong>22-23 OUT</strong>
-      <span>CAMPAL</span>
-      <small>CAMETÁ - PA</small>
-      <button>+ DETALHES</button>
-    </div>
+  }
 
-    <div class="evento">
-      <strong>30-31 OUT</strong>
-      <span>CAMPAL</span>
-      <small>SÃO BENTO - MA</small>
-      <button>+ DETALHES</button>
-    </div>
+  </div>
 
-    <div class="evento">
-      <strong>5 NOV</strong>
-      <span>RECITAL - ESCOLA DE MÚSICA FAAMA</span>
-      <small>BENEVIDES - PA</small>
-      <button>+ DETALHES</button>
-    </div>
+  </section>
 
-    <div class="evento">
-      <strong>14 NOV</strong>
-      <span>ANIVERSÁRIO UNB</span>
-      <small>ANANINDEUA - PA</small>
-      <button>+ DETALHES</button>
+  @if (eventoSelecionado) {
+
+  <div class="modal-overlay" (click)="fecharDetalhes()">
+
+    <div class="modal-evento" (click)="$event.stopPropagation()">
+
+      <button class="modal-fechar" (click)="fecharDetalhes()">×</button>
+
+      <h2>{{ eventoSelecionado.titulo }}</h2>
+
+      <p>
+        {{ eventoSelecionado.descricao }}
+      </p>
+
     </div>
 
   </div>
 
-</section>
+}
 
-<section id="galeria">
+  <section id="galeria">
 
   <div class="galeria-conteudo">
 
@@ -232,17 +239,17 @@
 
       <div class="galeria-foto-principal">
 
-        <button class="galeria-seta anterior">
-          ‹
+        <button class="galeria-seta anterior" (click)="fotoAnterior()">
+              ‹
         </button>
 
         <img
-          src="/imagens/IMG_6237.JPEG"
+          [src]="fotosGaleria[fotoAtual]"
           alt="UNIVOX em apresentação"
-        >
+>
 
-        <button class="galeria-seta proxima">
-          ›
+        <button class="galeria-seta proxima" (click)="proximaFoto()">
+        ›
         </button>
 
       </div>
@@ -257,39 +264,39 @@
     <!-- COLUNA 3 -->
     <div class="galeria-coluna3">
 
-      <div class="galeria-miniaturas">
+      <div class="galeria-miniaturas" #galeriaMiniaturas>
 
         <button class="miniatura ativo">
           <img
-            src="/imagens/IMG_6237.JPEG"
+            src="/imagens/IMG_6226.JPEG"
             alt="Foto do álbum"
           >
         </button>
 
         <button class="miniatura">
           <img
-            src="/imagens/IMG_6237.JPEG"
+            src="/imagens/IMG_6227.JPEG"
             alt="Foto do álbum"
           >
         </button>
 
         <button class="miniatura">
           <img
-            src="/imagens/IMG_6237.JPEG"
+            src="/imagens/IMG_6236.JPEG"
             alt="Foto do álbum"
           >
         </button>
 
         <button class="miniatura">
           <img
-            src="/imagens/IMG_6237.JPEG"
+            src="/imagens/IMG_6249.JPEG"
             alt="Foto do álbum"
           >
         </button>
 
         <button class="miniatura">
           <img
-            src="/imagens/IMG_6237.JPEG"
+            src="/imagens/IMG_6300.JPG"
             alt="Foto do álbum"
           >
         </button>
@@ -315,7 +322,7 @@
 
  
 
-</section>
+  </section>
 
 
   <section id="midias">
@@ -334,43 +341,49 @@
     <div class="midias-formulario">
 
       <div class="midias-selecao">
-        <label>SELECIONE A MÚSICA</label>
+    <label>SELECIONE A MÚSICA</label>
 
-        <select>
-          <option>Andar em Sua Lei</option>
-        </select>
+    <select [(ngModel)]="musicaSelecionada">
+      @for (musica of musicas; track musica.id) {
+        <option [value]="musica.id">
+          {{ musica.titulo }}
+        </option>
+      }
+    </select>
+  </div>
+
+       <div class="midias-selecao">
+          <label>SELECIONE O TIPO DE ARQUIVO</label>
+
+          <select (change)="alterarTipoArquivo($event)">
+            <option value="Kit de Voz">Kit de Voz</option>
+            <option value="Partitura">Partitura</option>
+          </select>
       </div>
 
-      <div class="midias-selecao">
-        <label>SELECIONE O TIPO DE ARQUIVO</label>
+      @if (mostrarVozes) {
+    <div class="midias-selecao">
+      <label>SELECIONE A VOZ</label>
 
-        <select>
-          <option>Kit de Voz</option>
-          <option>Partitura</option>
-        </select>
-      </div>
-
-      <div class="midias-selecao">
-        <label>SELECIONE A VOZ</label>
-
-        <select>
-          <option>1º Soprano</option>
-          <option>2º Soprano</option>
-          <option>1º Contralto</option>
-          <option>2º Contralto</option>
-        </select>
-      </div>
-
+      <select [(ngModel)]="vozSelecionada">
+        @for (kit of filtrarVozes(); track kit.id) {
+          <option [value]="kit.id">
+            {{ kit.voz }}
+          </option>
+        }
+      </select>
     </div>
+  }
+
+</div>
 
     <div class="midias-botoes">
-      <button type="button">LIMPAR</button>
-      <button id="baixar" type="button">BAIXAR</button>
+      <button id="baixar" type="button" (click)="baixar()">BAIXAR</button>
     </div>
 
   </div>
 
-</section>
+  </section>
 
   <section id="contatos">
 
@@ -390,13 +403,18 @@
       <div class="contatos-detalhes">
         <p>
           <i class="fa-brands fa-whatsapp"></i>
-          PR RONNY VIEIRA
-        </p>
+          <a href="https://wa.me/5591999999999" target="_blank">
+              PR RONNY VIEIRA
+          </a>
+</p>
 
         <p>
           <i class="fa-regular fa-envelope"></i>
-          UNIVOX.FAAMA@FAAMA.BR
+          <a href="mailto:univox.faama@faama.br">
+               UNIVOX.FAAMA@FAAMA.BR
+          </a>
         </p>
+        
       </div>
 
     </div>
@@ -414,8 +432,9 @@
 
   </div>
 
-</section>
+  </section>
 
+</main>
 
 <footer>
 
@@ -425,20 +444,16 @@
       Todos os direitos reservados.
     </p>
 
-    <div class="footer-redes">
-
-      <a href="#" aria-label="Instagram">
-        <i class="fa-brands fa-instagram"></i>
+   <div class="footer-redes">
+      <a href="https://www.instagram.com/univox_" target="_blank">
+        <i class="icone-instagram fa-brands fa-instagram"></i>
       </a>
-
-      <a href="#" aria-label="YouTube">
-        <i class="fa-brands fa-youtube"></i>
+      <a href="https://www.youtube.com/@univoxfaama7371" target="_blank">
+        <i class="icone-youtube fa-brands fa-youtube"></i>
       </a>
-
-      <a href="#" aria-label="Spotify">
-        <i class="fa-brands fa-spotify"></i>
+      <a href="https://open.spotify.com/intl-pt/artist/2WkRpwuAi081VE0bz3TjYB" target="_blank">
+        <i class="icone-spotify fa-brands fa-spotify"></i>
       </a>
-
     </div>
 
   </div>
