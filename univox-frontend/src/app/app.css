@@ -110,10 +110,10 @@ section {
 
 
 .home-título {
-  font-family: 'Open Sans', sans-serif;  
-  font-size: 90px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: clamp(45px, 7vw, 90px);
   color: #69443c;
-  letter-spacing: 18px;
+  letter-spacing: clamp(8px, 1.4vw, 18px);
   font-weight: 300;
   margin-bottom: 50px;
   transform: translateY(-150px);
@@ -559,10 +559,9 @@ h2 {
 .galeria-foto-principal img {
   width: 100%;
   height: 100%;
-
   object-fit: contain;
-
   display: block;
+  min-height: 0;
 }
 
 /* SETAS DA FOTO PRINCIPAL */

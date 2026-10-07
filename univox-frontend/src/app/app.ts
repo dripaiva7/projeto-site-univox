@@ -1,11 +1,12 @@
-import { Component, signal, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, signal, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
+import { NgFor } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FormsModule],
+  imports: [RouterOutlet, FormsModule, NgFor],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -16,14 +17,7 @@ export class App implements OnInit {
     
   abreMenu = false;
 
-  fotosGaleria = [
-  '/imagens/IMG_6237.JPEG',
-  '/imagens/IMG_6226.JPEG',
-  '/imagens/IMG_6227.JPEG',
-  '/imagens/IMG_6236.JPEG',
-  '/imagens/IMG_6249.JPEG',
-  '/imagens/IMG_6300.JPG',
-];
+  fotosGaleria: any[] = [];
 
 fotoAtual = 0;
 
@@ -31,6 +25,11 @@ fotoAtual = 0;
   musicas: any[] = [];
   kitsVoz: any[] = [];
   partituras: any[] = [];
+  albuns: any[] = [];
+  albunsFiltrados: any[] = [];
+  anoSelecionado = 2026;
+  albumSelecionado: any = null;
+  fotosDoAlbum: any[] = [];
 
   musicaSelecionada: number = 1;
   vozSelecionada: number | null = null;
@@ -42,25 +41,28 @@ fotoAtual = 0;
   @ViewChild('galeriaFotos') galeriaFotos!: ElementRef;
   @ViewChild('galeriaMiniaturas') galeriaMiniaturas!: ElementRef;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+  private http: HttpClient,
+  private cdr: ChangeDetectorRef
+) {}
 
 ngOnInit() {
 
   console.log('ngOnInit foi executado');
 
   this.http.get<any[]>('http://localhost:8080/agenda/todos')
-    .subscribe({
+  .subscribe({
+    next: (dados) => {
+      this.eventos = dados;
 
-      next: (dados) => {
-        this.eventos = dados;
-        console.log('Eventos carregados:', this.eventos);
-      },
+      this.cdr.detectChanges();
 
-      error: (erro) => {
-        console.error('Erro ao carregar eventos:', erro);
-      }
-
-    });
+      console.log('Eventos carregados:', this.eventos);
+    },
+    error: (erro) => {
+      console.error('Erro ao carregar agenda:', erro);
+    }
+  });
 
     this.http.get<any[]>('http://localhost:8080/musicas/todos')
   .subscribe({
@@ -101,6 +103,40 @@ ngOnInit() {
     }
   });
 
+  this.http.get<any[]>('http://localhost:8080/fotos/todos')
+  .subscribe({
+    next: (dados) => {
+      this.fotosGaleria = dados;
+
+      console.log('Fotos carregadas:', this.fotosGaleria);
+
+      this.cdr.detectChanges();
+    },
+    error: (erro) => {
+      console.error('Erro ao carregar fotos:', erro);
+    }
+  });
+
+this.http.get<any[]>('http://localhost:8080/albuns/todos')
+  .subscribe({
+    next: (dados) => {
+
+      this.albuns = dados;
+
+      this.filtrarAlbuns();
+
+      this.selecionarAlbum(this.albunsFiltrados[0]);
+
+      this.cdr.detectChanges();
+
+      console.log('Álbuns carregados:', this.albuns);
+      console.log('Álbuns filtrados:', this.albunsFiltrados);
+
+    },
+    error: (erro) => {
+      console.error('Erro ao carregar álbuns:', erro);
+    }
+  });
 }
 
 formatarData(data: string): string {
@@ -150,19 +186,53 @@ galeriaProxima() {
 }
 
 fotoAnterior() {
+  if (this.fotosDoAlbum.length === 0) {
+    return;
+  }
+
   if (this.fotoAtual > 0) {
     this.fotoAtual--;
   } else {
-    this.fotoAtual = this.fotosGaleria.length - 1;
+    this.fotoAtual = this.fotosDoAlbum.length - 1;
   }
 }
 
 proximaFoto() {
-  if (this.fotoAtual < this.fotosGaleria.length - 1) {
+  if (this.fotosDoAlbum.length === 0) {
+    return;
+  }
+
+  if (this.fotoAtual < this.fotosDoAlbum.length - 1) {
     this.fotoAtual++;
   } else {
     this.fotoAtual = 0;
   }
+}
+
+filtrarAlbuns() {
+
+  this.albunsFiltrados = this.albuns.filter(album => {
+
+    const ano = new Date(album.data).getFullYear();
+
+    return ano === Number(this.anoSelecionado);
+
+  });
+
+}
+
+selecionarAlbum(album: any) {
+  this.albumSelecionado = album;
+
+  this.fotosDoAlbum = this.fotosGaleria.filter(
+    foto => foto.album_id === album.id
+  );
+
+  this.fotoAtual = 0;
+
+  console.log('Álbum selecionado:', this.albumSelecionado);
+  console.log('Fotos deste álbum:', this.fotosDoAlbum);
+  console.log('URL da primeira foto:', this.fotosDoAlbum[0]?.foto_url);
 }
 
 miniaturasAnterior() {

@@ -140,7 +140,7 @@
     <div class="agenda-ano">
       <p>2026</p>
     </div>
-<p>.</p>
+
      @for (evento of eventos; track evento.id) {
 
     <div class="evento">
@@ -199,29 +199,23 @@
       <div class="galeria-ano">
         <span>ANO:</span>
 
-        <select>
-          <option>2026</option>
-          <option>2025</option>
-          <option>2024</option>
+        <select [(ngModel)]="anoSelecionado" (ngModelChange)="filtrarAlbuns()">
+          <option [value]="2026">2026</option>
+          <option [value]="2025">2025</option>
+          <option [value]="2024">2024</option>
         </select>
+
       </div>
 
       <div class="galeria-albuns">
 
-        <button class="album ativo">
-          Adoradores Norte
-        </button>
+        <button
+          class="album"
+          *ngFor="let album of albunsFiltrados"
+          (click)="selecionarAlbum(album)">
 
-        <button class="album">
-          Caixa de Música
-        </button>
+          {{ album.titulo }}
 
-        <button class="album">
-          Turnê Carnaval - PA
-        </button>
-
-        <button class="album">
-          Igreja FAAMA
         </button>
 
       </div>
@@ -244,9 +238,9 @@
         </button>
 
         <img
-          [src]="fotosGaleria[fotoAtual]"
-          alt="UNIVOX em apresentação"
->
+          [src]="fotosDoAlbum[fotoAtual]?.foto_url"
+          [alt]="fotosDoAlbum[fotoAtual]?.legenda"
+        >
 
         <button class="galeria-seta proxima" (click)="proximaFoto()">
         ›
@@ -255,7 +249,9 @@
       </div>
 
       <div class="galeria-legenda">
-        <p>Igreja FAAMA - 12/04/26</p>
+        <p class="legenda-foto">
+          {{ fotosDoAlbum[fotoAtual]?.legenda }}
+        </p>
       </div>
 
     </div>
@@ -266,59 +262,23 @@
 
       <div class="galeria-miniaturas" #galeriaMiniaturas>
 
-        <button class="miniatura ativo">
+        <button
+          class="miniatura"
+          *ngFor="let foto of fotosDoAlbum; let i = index"
+          [class.ativo]="i === fotoAtual"
+          (click)="fotoAtual = i"
+        >
           <img
-            src="/imagens/IMG_6226.JPEG"
-            alt="Foto do álbum"
-          >
-        </button>
-
-        <button class="miniatura">
-          <img
-            src="/imagens/IMG_6227.JPEG"
-            alt="Foto do álbum"
-          >
-        </button>
-
-        <button class="miniatura">
-          <img
-            src="/imagens/IMG_6236.JPEG"
-            alt="Foto do álbum"
-          >
-        </button>
-
-        <button class="miniatura">
-          <img
-            src="/imagens/IMG_6249.JPEG"
-            alt="Foto do álbum"
-          >
-        </button>
-
-        <button class="miniatura">
-          <img
-            src="/imagens/IMG_6300.JPG"
-            alt="Foto do álbum"
-          >
-        </button>
-
-        <button class="miniatura">
-          <img
-            src="/imagens/IMG_6237.JPEG"
-            alt="Foto do álbum"
-          >
-        </button>
-
-        <button class="miniatura">
-          <img
-            src="/imagens/IMG_6237.JPEG"
-            alt="Foto do álbum"
+            [src]="foto.foto_url"
+            [alt]="foto.legenda"
           >
         </button>
 
       </div>
 
     </div>
-    </div>
+
+  </div>
 
  
 
